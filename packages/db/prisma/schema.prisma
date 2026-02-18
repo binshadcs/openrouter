@@ -12,3 +12,87 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model User {
+  id                 Int                  @id @default(autoincrement())
+  email              String               @unique
+  password           String
+  apiKeys            ApiKey[]
+  onrampTransactions OnrampTransaction[]
+  conversations      Conversation[]
+}
+
+model ApiKey {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  apiKey    String   @unique
+  disabled  Boolean  @default(false)
+  mac       String?
+  windows   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id])
+  conversations Conversation[]
+}
+
+model Credit {
+  id     Int  @id @default(autoincrement())
+  userId Int  @unique
+  credits Int
+}
+
+model OnrampTransaction {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  amount    Int
+  status    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model Conversation {
+  id                Int      @id @default(autoincrement())
+  userId            Int
+  apiKeyId          Int
+  input             String
+  output            String?
+  inputTokenCount   Int?
+  outputTokenCount  Int?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  user              User     @relation(fields: [userId], references: [id])
+  apiKey            ApiKey   @relation(fields: [apiKeyId], references: [id])
+}
+
+model Company {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  website   String
+  models    Model[]
+}
+
+model Model {
+  id         Int        @id @default(autoincrement())
+  name       String     @unique
+  companyId  Int
+  company    Company    @relation(fields: [companyId], references: [id])
+  modelProviderMappings ModelProviderMapping[]
+}
+
+model Provider {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  website   String
+  modelProviderMappings ModelProviderMapping[]
+}
+
+model ModelProviderMapping {
+  id               Int      @id @default(autoincrement())
+  modelId          Int
+  providerId       Int
+  inputTokenCost   Float
+  outputTokenCost  Float
+  model            Model    @relation(fields: [modelId], references: [id])
+  provider         Provider @relation(fields: [providerId], references: [id])
+}
