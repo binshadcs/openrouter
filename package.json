@@ -9,7 +9,9 @@
     "check-types": "turbo run check-types"
   },
   "devDependencies": {
+    "@types/bun": "^1.3.9",
     "prettier": "^3.7.4",
+    "prisma": "^7.4.0",
     "turbo": "^2.8.9",
     "typescript": "5.9.2"
   },
@@ -20,5 +22,10 @@
   "workspaces": [
     "apps/*",
     "packages/*"
-  ]
+  ],
+  "dependencies": {
+    "@prisma/adapter-libsql": "^7.4.0",
+    "@prisma/client": "^7.4.0",
+    "elysia": "^1.4.25"
+  }
 }
